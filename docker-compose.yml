@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  superset_minimum:
+    build: .
+    container_name: superset_minimum
+    ports:
+      - '8088:8088'
+    environment:
+      - SUPERSET_ENV=production
+      - SUPERSET_LOAD_EXAMPLES=no
+      - SUPERSET_SECRET_KEY=changeme_please
+
+      # admin ユーザー情報（必要なら）
+      - SUPERSET_ADMIN_USERNAME=admin
+      - SUPERSET_ADMIN_FIRSTNAME=Admin
+      - SUPERSET_ADMIN_LASTNAME=User
+      - SUPERSET_ADMIN_EMAIL=admin@example.com
+      - SUPERSET_ADMIN_PASSWORD=admin
+      - SUPERSET_LOAD_EXAMPLES=yes
+    volumes:
+      - superset_minimum_home:/app/superset_home
+    restart: unless-stopped
+
+volumes:
+  superset_minimum_home:
