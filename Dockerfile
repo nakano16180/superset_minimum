@@ -12,6 +12,7 @@ RUN . /app/.venv/bin/activate && \
     # package needed for using single-sign on authentication:
     Authlib 
 
+COPY --chown=superset superset_config.py /app/docker/superset_config.py
 # 起動時に毎回 db upgrade / init / admin 作成をやるスクリプト
 COPY --chown=superset superset-init.sh /app/superset-init.sh
 RUN chmod +x /app/superset-init.sh

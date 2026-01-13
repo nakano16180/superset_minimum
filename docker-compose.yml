@@ -1,26 +1,61 @@
 version: '3.8'
 
 services:
+  postgres-db:
+    image: postgres:17
+    restart: always
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: superset
+      POSTGRES_HOST: postgres-db
+    ports:
+      - 5432:5432
+    networks:
+      - superset_network
   superset_minimum:
     build: .
     container_name: superset_minimum
+    platform:
+      linux/amd64
     ports:
       - '8088:8088'
+    networks:
+      - superset_network
     environment:
-      - SUPERSET_ENV=production
-      - SUPERSET_LOAD_EXAMPLES=no
-      - SUPERSET_SECRET_KEY=changeme_please
+      SUPERSET_ENV: production
+      SUPERSET_LOAD_EXAMPLES: no
+      SUPERSET_SECRET_KEY: changeme_please
 
       # admin ユーザー情報（必要なら）
-      - SUPERSET_ADMIN_USERNAME=admin
-      - SUPERSET_ADMIN_FIRSTNAME=Admin
-      - SUPERSET_ADMIN_LASTNAME=User
-      - SUPERSET_ADMIN_EMAIL=admin@example.com
-      - SUPERSET_ADMIN_PASSWORD=admin
-      - SUPERSET_LOAD_EXAMPLES=yes
+      SUPERSET_ADMIN_USERNAME: admin
+      SUPERSET_ADMIN_FIRSTNAME: Admin
+      SUPERSET_ADMIN_LASTNAME: User
+      SUPERSET_ADMIN_EMAIL: admin@example.com
+      SUPERSET_ADMIN_PASSWORD: admin
+
+      DATABASE_DB: superset
+      DATABASE_HOST: postgres-db
+      DATABASE_PASSWORD: postgres
+      DATABASE_USER: postgres
+      DATABASE_PORT: 5432
+      DATABASE_DIALECT: postgresql
+
+      POSTGRES_DB: superset
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+      SUPERSET_CONFIG_PATH: /app/docker/superset_config.py
+
     volumes:
       - superset_minimum_home:/app/superset_home
+      - ./superset_config.py:/app/docker/superset_config.py
     restart: unless-stopped
 
 volumes:
   superset_minimum_home:
+networks:
+  superset_network:
+    name: "superset_network"
+    driver: bridge
